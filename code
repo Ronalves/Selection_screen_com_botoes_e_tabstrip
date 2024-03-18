@@ -1,0 +1,281 @@
+*-----------------------------------------------------------------------
+* CLARO
+* -----
+* Módulo    : FI
+* Transações:ZTFI814
+* Objeto    :
+* Tipo      : Cockpit
+* Abap :Ronaldo Alves
+* Func: Sivaldo
+*-----------------------------------------------------------------------
+* Codificação Inicial: CLARO
+*-----------------------------------------------------------------------
+* Descrição: 'Report' tipo 'cockpit' para as funcionalidades relaciona-
+*            das Água e Telefonia
+*-----------------------------------------------------------------------
+* Login        Data         CR           Comentário
+* --------     ----------   ----------   ----------
+*-----------------------------------------------------------------------
+REPORT  zrfi971.
+
+TYPE-POOLS icon.
+
+TABLES sscrfields.
+
+DATA: tg_exclude TYPE TABLE OF rsexfcode WITH HEADER LINE,
+      vg_number  TYPE tbtcjob-jobcount,
+      vg_name    TYPE tbtcjob-jobname.
+
+SELECTION-SCREEN BEGIN OF TABBED BLOCK tb1 FOR 20 LINES.
+
+SELECTION-SCREEN TAB (20) tab_cad  USER-COMMAND tab_cad  DEFAULT SCREEN 101.
+SELECTION-SCREEN TAB (20) tab_conf USER-COMMAND tab_conf DEFAULT SCREEN 102.
+SELECTION-SCREEN TAB (20) tab_oper USER-COMMAND tab_oper DEFAULT SCREEN 103.
+SELECTION-SCREEN TAB (20) tab_rela USER-COMMAND tab_rela DEFAULT SCREEN 104.
+
+SELECTION-SCREEN END OF BLOCK tb1.
+
+SELECTION-SCREEN BEGIN OF SCREEN 101 AS SUBSCREEN.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+  PUSHBUTTON 2(75) b_c_desp USER-COMMAND ztfi812, "Cadastro Tipo Despesa
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+  PUSHBUTTON 2(75) b_c_des USER-COMMAND ztfi813, "Cadastro de Despesas
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+  PUSHBUTTON 2(75) b_c_tps USER-COMMAND ztfi816, "Cadastro Tipo de Site
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+  PUSHBUTTON 2(75) b_g_deb USER-COMMAND ztfi817, "Gestão de Débitos Automáticos Conc.
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+  PUSHBUTTON 2(75) b_g_deb2 USER-COMMAND ztfi818, "Gestão de Débitos Automáticos Conc.
+END OF LINE.
+
+SELECTION-SCREEN END OF SCREEN 101.
+
+SELECTION-SCREEN BEGIN OF SCREEN 102 AS SUBSCREEN.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+PUSHBUTTON 2(75) b_de_par USER-COMMAND ztfi841,  " De-Para de código  de conv. para forn.
+END OF LINE.
+
+SELECTION-SCREEN END OF SCREEN 102.
+
+SELECTION-SCREEN BEGIN OF SCREEN 103 AS SUBSCREEN.
+
+SELECTION-SCREEN:
+BEGIN OF LINE,
+PUSHBUTTON 2(75) b_centr USER-COMMAND ztfi838, " Lançamento de NF Água , Telefonia , Outras Despesas
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+PUSHBUTTON 2(75) b_carre USER-COMMAND ztfi842, " Carregar Arquivos Bancários
+END OF LINE.
+
+SELECTION-SCREEN END OF SCREEN 103.
+
+SELECTION-SCREEN BEGIN OF SCREEN 104 AS SUBSCREEN.
+
+SELECTION-SCREEN:
+BEGIN OF LINE,
+PUSHBUTTON 2(75) b_log15 USER-COMMAND ztfi815, " Log de erros do Último Upload da ZTFI813
+END OF LINE.
+
+SELECTION-SCREEN SKIP 1.
+SELECTION-SCREEN:
+BEGIN OF LINE,
+PUSHBUTTON 2(75) b_log19 USER-COMMAND ztfi819, " Log de erros do Último Upload da ZTFI818
+END OF LINE.
+
+SELECTION-SCREEN END OF SCREEN 104.
+
+INITIALIZATION.
+  tg_exclude-fcode  = 'ONLI'.
+  APPEND tg_exclude.
+
+  tab_cad  = text-001.
+  tab_conf = text-002.
+  tab_oper = text-003.
+  tab_rela = text-026.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-004 "Cadastro Tipo Despesa
+                              b_c_desp.
+
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-024 "Cadastro de Despesas
+                              b_c_des.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-005 "Cadastro Tipo de Site
+                              b_c_tps.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-027 "Gestão de Débitos Automáticos Conc.
+                              b_g_deb.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-028 "Gestão de Débitos Automáticos Conc.
+                              b_g_deb2.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-029 "De-Para de código  de conv. para forn.
+                              b_de_par.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-030 "Lançamento de NF Água , Telefonia , Outras Despesas
+                              b_centr.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-031 "Carregar Arquivos Bancários
+                              b_carre.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-032 "Log de erros do Último Upload da ZTFI813
+                              b_log15.
+
+  PERFORM f_icon_create USING icon_execute_object
+                              text-033 "Log de erros do Último Upload da ZTFI818
+                              b_log19.
+
+AT SELECTION-SCREEN OUTPUT.
+
+  CALL FUNCTION 'RS_SET_SELSCREEN_STATUS'
+    EXPORTING
+      p_status  = '%_00'
+      p_program = sy-cprog
+    TABLES
+      p_exclude = tg_exclude[].
+
+AT SELECTION-SCREEN.
+  CASE sscrfields.
+
+    WHEN 'ZTFI812'.
+      CALL TRANSACTION 'ZTFI812'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI813'.
+      CALL TRANSACTION 'ZTFI813'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI816'.
+      CALL TRANSACTION 'ZTFI816'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI817'.
+      CALL TRANSACTION 'ZTFI817'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI818'.
+      CALL TRANSACTION 'ZTFI818'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI841'.
+      CALL TRANSACTION 'ZTFI841'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI838'.
+      CALL TRANSACTION 'ZTFI838'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI842'.
+      CALL TRANSACTION 'ZTFI842'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI815'.
+      CALL TRANSACTION 'ZTFI815'.
+      CLEAR: sscrfields-ucomm.
+
+    WHEN 'ZTFI819'.
+      CALL TRANSACTION 'ZTFI819'.
+      CLEAR: sscrfields-ucomm.
+  ENDCASE.
+
+*&---------------------------------------------------------------------*
+*&      Form  f_icon_create
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM f_icon_create USING us_icon
+                         us_text
+                         us_button.
+
+  CALL FUNCTION 'ICON_CREATE'
+    EXPORTING
+      name   = us_icon
+      text   = us_text
+    IMPORTING
+      result = us_button
+    EXCEPTIONS
+      OTHERS = 0.
+ENDFORM.                    "f_icon_create
+
+*&---------------------------------------------------------------------*
+*&      Form  f_job_open
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM f_job_open USING us_name.
+  CLEAR: vg_name, vg_number.
+
+  vg_name = us_name.
+
+  CALL FUNCTION 'JOB_OPEN'
+    EXPORTING
+      jobname          = vg_name
+    IMPORTING
+      jobcount         = vg_number
+    EXCEPTIONS
+      cant_create_job  = 1
+      invalid_job_data = 2
+      jobname_missing  = 3
+      OTHERS           = 4.
+  IF sy-subrc NE 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+ENDFORM.                    "f_job_open
+
+*&---------------------------------------------------------------------*
+*&      Form  f_job_close
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM f_job_close.
+  CALL FUNCTION 'JOB_CLOSE'
+    EXPORTING
+      jobcount             = vg_number
+      jobname              = vg_name
+      strtimmed            = 'X'
+    EXCEPTIONS
+      cant_start_immediate = 1
+      invalid_startdate    = 2
+      jobname_missing      = 3
+      job_close_failed     = 4
+      job_nosteps          = 5
+      job_notex            = 6
+      lock_failed          = 7
+      OTHERS               = 8.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+
+ENDFORM.                    "f_job_close
